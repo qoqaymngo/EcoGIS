@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f5f7f5">
+  <meta name="description" content="Интерактивная карта районов Западно-Казахстанской области с показателями воздуха, почвы и ИИ-помощником.">
+  <title>ЭкоГИС — Экологический мониторинг ЗКО</title>
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="style.css">
+  <script src="app.js" type="module"></script>
+</head>
+<body>
+<svg xmlns="http://www.w3.org/2000/svg" class="sprite" aria-hidden="true">
+  <symbol id="i-leaf" viewBox="0 0 24 24"><path d="M20 4c-7.9-.2-13.4 2-14.5 7.5C4.5 16 7.8 19 12 18c5.5-1 7.8-6.4 8-14Z"/><path d="M4 20c2.2-4.1 5.4-7 9-9"/></symbol>
+  <symbol id="i-map" viewBox="0 0 24 24"><path d="m3 6 6-3 6 3 6-3v15l-6 3-6-3-6 3V6Zm6-3v15m6-12v15"/></symbol>
+  <symbol id="i-pin" viewBox="0 0 24 24"><path d="M20 10c0 5-8 11-8 11s-8-6-8-11a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></symbol>
+  <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5m0-8h.01"/></symbol>
+  <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M20 11a8 8 0 0 0-13.5-5.8L4 8m0-5v5h5m-5 5a8 8 0 0 0 13.5 5.8L20 16m0 5v-5h-5"/></symbol>
+  <symbol id="i-wind" viewBox="0 0 24 24"><path d="M3 8h12a2.5 2.5 0 1 0-2.5-2.5M3 12h16a2.5 2.5 0 1 1-2.5 2.5M3 16h8a2.5 2.5 0 1 1-2.5 2.5"/></symbol>
+  <symbol id="i-particles" viewBox="0 0 24 24"><circle cx="6" cy="6" r="2"/><circle cx="17" cy="7" r="3"/><circle cx="10" cy="17" r="3"/><path d="M18 17h.01M5 12h.01M16 21h.01"/></symbol>
+  <symbol id="i-alert" viewBox="0 0 24 24"><path d="m10.3 4.7-8 13.7a1.7 1.7 0 0 0 1.5 2.6h16.4a1.7 1.7 0 0 0 1.5-2.6l-8-13.7a2 2 0 0 0-3.4 0ZM12 9v4m0 4h.01"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+  <symbol id="i-layers" viewBox="0 0 24 24"><path d="m12 3 9 5-9 5-9-5 9-5Zm9 9-9 5-9-5m18 4-9 5-9-5"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 4 4"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-minus" viewBox="0 0 24 24"><path d="M5 12h14"/></symbol>
+  <symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="2"/><path d="M12 2v3m0 14v3M2 12h3m14 0h3"/></symbol>
+  <symbol id="i-expand" viewBox="0 0 24 24"><path d="M9 4H4v5m11-5h5v5M4 15v5h5m11-5v5h-5"/></symbol>
+  <symbol id="i-chevron" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+  <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M4 12h15m-6-6 6 6-6 6"/></symbol>
+  <symbol id="i-up-right" viewBox="0 0 24 24"><path d="M7 17 17 7M7 7h10v10"/></symbol>
+  <symbol id="i-drop" viewBox="0 0 24 24"><path d="M12 3c2.8 4 6 7.4 6 11a6 6 0 0 1-12 0c0-3.6 3.2-7 6-11Z"/></symbol>
+  <symbol id="i-temp" viewBox="0 0 24 24"><path d="M14 14.5V5a2 2 0 0 0-4 0v9.5a4 4 0 1 0 4 0ZM12 10v7"/></symbol>
+  <symbol id="i-chart" viewBox="0 0 24 24"><path d="M4 4v16h16M7 15l4-5 4 3 5-7"/></symbol>
+  <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 3v12m-4-4 4 4 4-4M4 16v4h16v-4"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="m6 6 12 12M6 18 18 6"/></symbol>
+  <symbol id="i-sort" viewBox="0 0 24 24"><path d="m7 10 5-5 5 5m-10 4 5 5 5-5"/></symbol>
+</svg>
+
+<header class="topbar">
+  <div class="top-inner">
+    <a class="brand" href="#overview" aria-label="ЭкоГИС, обзор">
+      <span class="brand-mark"><svg class="icon"><use href="#i-leaf"/></svg></span>
+      <span>ЭкоГИС <small>ЗАПАДНЫЙ КАЗАХСТАН</small></span>
+    </a>
+    <nav aria-label="Разделы сайта">
+      <a class="nav-item active" href="#overview"><svg class="icon"><use href="#i-map"/></svg>Обзор</a>
+      <a class="nav-item" href="#points"><svg class="icon"><use href="#i-pin"/></svg>Точки мониторинга</a>
+      <a class="nav-item" href="#methodology" data-method><svg class="icon"><use href="#i-info"/></svg>Методология</a>
+    </nav>
+    <div class="top-actions">
+      <span class="source-status" id="source-status"><span class="signal"></span><span id="status-text">Загрузка данных</span></span>
+      <button class="button refresh" id="refresh" type="button"><svg class="icon"><use href="#i-refresh"/></svg><span>Обновить</span></button>
+    </div>
+  </div>
+</header>
+
+<main class="shell" id="overview">
+  <section class="intro" aria-labelledby="page-title">
+    <div>
+      <div class="eyebrow"><span></span> ГЕОИНФОРМАЦИОННАЯ СИСТЕМА</div>
+      <h1 id="page-title">Экологический мониторинг</h1>
+      <p>Воздух, почва и метеоусловия Западно-Казахстанской области</p>
+    </div>
+    <div class="time-card"><svg class="icon"><use href="#i-clock"/></svg><div><span>ВРЕМЯ ДАННЫХ · UTC+5</span><strong id="data-time">Загрузка…</strong></div></div>
+  </section>
+
+  <section class="kpis" aria-label="Сводка по расчетным точкам ЗКО">
+    <article class="kpi"><div class="kpi-top"><span class="kpi-icon green"><svg class="icon"><use href="#i-wind"/></svg></span><span>Средний AQI</span></div><div class="kpi-value" id="kpi-aqi">—</div><div class="kpi-note" id="kpi-aqi-note">Европейский индекс качества воздуха</div></article>
+    <article class="kpi"><div class="kpi-top"><span class="kpi-icon blue"><svg class="icon"><use href="#i-particles"/></svg></span><span>Влажность почвы</span></div><div class="kpi-value" id="kpi-pm">—</div><div class="kpi-note">Объёмная доля воды · слой 0–1 см</div></article>
+    <article class="kpi"><div class="kpi-top"><span class="kpi-icon amber"><svg class="icon"><use href="#i-alert"/></svg></span><span>Точки с AQI выше 40</span></div><div class="kpi-value" id="kpi-alert">—</div><div class="kpi-note">Умеренный и выше</div></article>
+    <article class="kpi"><div class="kpi-top"><span class="kpi-icon teal"><svg class="icon"><use href="#i-pin"/></svg></span><span>Точки мониторинга</span></div><div class="kpi-value" id="kpi-total">13</div><div class="kpi-note" id="kpi-coverage">12 районов и Уральск</div></article>
+  </section>
+
+  <section class="map-layout" aria-label="Карта и слои">
+    <article class="card map-card" id="map-card">
+      <div class="card-head">
+        <div class="section-icon"><svg class="icon"><use href="#i-map"/></svg></div>
+        <div class="head-text"><h2>Интерактивная карта ЗКО</h2><p>Выберите район или Уральск на карте</p></div><label class="select-box district-select"><span class="sr-only">Район области</span><select id="district-filter" aria-label="Район области"><option value="">Вся область</option></select><svg class="icon"><use href="#i-chevron"/></svg></label>
+        <button class="button icon-button" id="expand" type="button" title="Развернуть карту" aria-label="Развернуть карту" aria-pressed="false"><svg class="icon"><use href="#i-expand"/></svg></button>
+      </div>
+      <div class="map-viewport" id="map" role="region" aria-label="Карта Западно-Казахстанской области. Используйте стрелки для перемещения и клавиши плюс и минус для масштаба." tabindex="0">
+        <canvas id="basemap" aria-hidden="true"></canvas>
+        <div id="markers" class="markers"></div>
+        <div id="map-popup" class="map-popup" hidden></div>
+        <form id="map-search" class="map-search" role="search" autocomplete="off">
+          <label class="search-box"><svg class="icon"><use href="#i-search"/></svg><input id="city-query" type="search" aria-label="Найти район на карте" aria-controls="map-results" placeholder="Найти район…"></label>
+          <ul id="map-results" class="search-results" aria-label="Результаты поиска района" hidden></ul>
+        </form>
+        <div class="map-tools">
+          <div class="zoom-stack">
+            <button class="map-button" id="zoom-in" type="button" title="Приблизить" aria-label="Приблизить"><svg class="icon"><use href="#i-plus"/></svg></button>
+            <button class="map-button" id="zoom-out" type="button" title="Отдалить" aria-label="Отдалить"><svg class="icon"><use href="#i-minus"/></svg></button>
+          </div>
+          <button class="map-button" id="reset-map" type="button" title="Показать всю область" aria-label="Показать всю область"><svg class="icon"><use href="#i-target"/></svg></button>
+        </div>
+        <div class="legend" id="legend"></div>
+        <div class="map-credit"><a href="https://www.naturalearthdata.com/" target="_blank" rel="noopener">Natural Earth</a> · <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">© OpenStreetMap</a></div>
+      </div>
+    </article>
+    <aside class="map-sidebar">
+      <div class="card layers-card">
+        <div class="side-head"><div class="section-icon"><svg class="icon"><use href="#i-layers"/></svg></div><div><h2>Слои карты</h2><p>Показатель на карте</p></div></div>
+        <fieldset class="layers" id="layers"><legend class="sr-only">Активный показатель</legend></fieldset>
+        <label class="water-option"><svg class="icon"><use href="#i-drop"/></svg><span>Реки и озёра</span><input id="water-toggle" type="checkbox" checked><span class="switch" aria-hidden="true"></span></label>
+      </div>
+      <div class="data-note">
+        <span class="note-icon"><svg class="icon"><use href="#i-info"/></svg></span>
+        <h2>ИИ-помощник ЗКО</h2>
+        <p>Задайте вопрос о воздухе, почве или динамике показателей выбранного района.</p>
+        <button class="button" id="open-chat" type="button" aria-haspopup="dialog">Открыть чат <svg class="icon"><use href="#i-arrow"/></svg></button>
+      </div>
+    </aside>
+  </section>
+
+  <section class="card chart-card" id="history" aria-labelledby="history-title">
+    <div class="card-head">
+      <div class="section-icon"><svg class="icon"><use href="#i-chart"/></svg></div>
+      <div class="head-text"><h2 id="history-title">Динамика показателей</h2><p id="chart-subtitle">Модельные данные расчетной точки · UTC+5</p></div>
+      <div class="chart-actions"><label class="select-box"><span class="sr-only">Район для графика</span><select id="chart-city"></select><svg class="icon"><use href="#i-chevron"/></svg></label><div class="segmented" id="periods" aria-label="Период графика"><button type="button" data-hours="24" aria-pressed="true">24 ч</button><button type="button" data-hours="48" aria-pressed="false">48 ч</button></div><button type="button" class="button analysis-trigger" id="analyze" aria-haspopup="dialog"><svg class="icon"><use href="#i-chart"/></svg>ИИ-анализ</button></div>
+    </div>
+    <div class="chart-content">
+      <div class="chart-key" id="chart-key"></div>
+      <div class="chart-view" id="chart-view"></div>
+    </div>
+  </section>
+
+  <section class="card points-card" id="points" aria-labelledby="points-title">
+    <div class="card-head">
+      <div class="section-icon"><svg class="icon"><use href="#i-pin"/></svg></div>
+      <div class="head-text"><h2 id="points-title">Точки мониторинга</h2><p>Сравните воздух и почву по районам</p></div>
+      <button class="button" id="download" type="button" disabled><svg class="icon"><use href="#i-download"/></svg>Скачать CSV</button>
+    </div>
+    <div class="table-tools">
+      <label class="search-box table-search"><svg class="icon"><use href="#i-search"/></svg><input id="table-query" type="search" placeholder="Район или Уральск…" aria-label="Фильтр по району"></label>
+      <button type="button" class="button filter-button" id="alert-filter" aria-pressed="false">AQI выше 40</button>
+      <span class="table-count" id="table-count"></span>
+    </div>
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th scope="col" data-th="name"><button type="button" data-sort="name">Район / город <svg class="icon"><use href="#i-sort"/></svg></button></th><th scope="col" data-th="european_aqi"><button type="button" data-sort="european_aqi">AQI <svg class="icon"><use href="#i-sort"/></svg></button></th><th scope="col" data-th="pm2_5"><button type="button" data-sort="pm2_5">PM2.5 <svg class="icon"><use href="#i-sort"/></svg></button></th><th scope="col" data-th="pm10"><button type="button" data-sort="pm10">PM10 <svg class="icon"><use href="#i-sort"/></svg></button></th><th scope="col" data-th="nitrogen_dioxide"><button type="button" data-sort="nitrogen_dioxide">NO₂ <svg class="icon"><use href="#i-sort"/></svg></button></th><th scope="col" data-th="temperature_2m"><button type="button" data-sort="temperature_2m">Темп. <svg class="icon"><use href="#i-sort"/></svg></button></th><th scope="col" data-th="soil_moisture_0_to_1cm"><button type="button" data-sort="soil_moisture_0_to_1cm">Почва · влага <svg class="icon"><use href="#i-sort"/></svg></button></th><th scope="col" data-th="soil_temperature_0cm"><button type="button" data-sort="soil_temperature_0cm">Почва · °C <svg class="icon"><use href="#i-sort"/></svg></button></th><th scope="col"><span class="sr-only">Показать на карте</span></th></tr></thead>
+        <tbody id="points-body"></tbody>
+      </table>
+    </div>
+  </section>
+</main>
+
+<footer class="shell footer"><a class="brand footer-brand" href="#overview"><span class="brand-mark"><svg class="icon"><use href="#i-leaf"/></svg></span><span>ЭкоГИС</span></a><span>Геоинформационная система экологического мониторинга</span><a href="#methodology" data-method>Источники данных <svg class="icon"><use href="#i-up-right"/></svg></a></footer>
+
+<dialog id="methodology" aria-labelledby="method-title">
+  <div class="dialog-head"><span class="section-icon"><svg class="icon"><use href="#i-info"/></svg></span><h2 id="method-title">Источники и методология</h2><button class="button icon-button" id="close-method" type="button" aria-label="Закрыть"><svg class="icon"><use href="#i-x"/></svg></button></div>
+  <div class="dialog-body">
+    <h3>Качество воздуха</h3>
+    <p>Open‑Meteo предоставляет оценки Copernicus CAMS для расчетных точек районов и Уральска. Пространственное разрешение глобальной модели — около 45 км. Европейский AQI основан на наибольшем из индексов отдельных загрязнителей. PM2.5, PM10 и NO₂ отображаются в мкг/м³. Цветовые интервалы этих слоёв служат для сравнения концентраций.</p>
+    <a href="https://open-meteo.com/en/docs/air-quality-api" target="_blank" rel="noopener">Open‑Meteo / Copernicus CAMS <svg class="icon"><use href="#i-up-right"/></svg></a>
+    <h3>Погода и карта</h3>
+    <p>Температура и ветер поступают из Open‑Meteo. Государственные границы, реки и озёра взяты из Natural Earth. Границы районов получены из открытого набора на основе OpenStreetMap (ODbL). Каждая точка характеризует выбранные координаты внутри района. Слой рек и озёр показывает расположение водоёмов.</p>
+    <a href="https://open-meteo.com/en/docs" target="_blank" rel="noopener">Open‑Meteo Weather API <svg class="icon"><use href="#i-up-right"/></svg></a>
+    <a href="district-boundaries.geojson" download>Скачать границы районов · OpenStreetMap / ODbL</a>
+    <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">Условия OpenStreetMap / ODbL</a>
+    <h3>Состояние почвы</h3><p>Температура поверхности и объёмная влажность слоя 0–1 см поступают из Open‑Meteo. Значение 0,25 м³/м³ соответствует 25% воды по объёму. Цвета позволяют сравнивать точки. Для оценки химического загрязнения и плодородия нужны лабораторные данные.</p><h3>Обновление</h3>
+    <p>Сайт запрашивает данные при открытии, по кнопке «Обновить» и каждые 30 минут, пока вкладка видима. При сбое сохраняются последние доступные значения с исходным временем. Время отображается по UTC+5.</p>
+    <h3>Измерения на станциях</h3>
+    <p>Казгидромет публикует измерения на постах, а также карты качества поверхностных вод, почв и радиационного фона.</p>
+    <a href="https://www.kazhydromet.kz/ru/interactive_cards" target="_blank" rel="noopener">Интерактивные карты Казгидромета <svg class="icon"><use href="#i-up-right"/></svg></a>
+  </div>
+</dialog>
+<dialog id="analysis-dialog" aria-labelledby="analysis-title">
+  <div class="dialog-head"><span class="section-icon"><svg class="icon"><use href="#i-chart"/></svg></span><h2 id="analysis-title">ИИ-анализ показателя</h2><button class="button icon-button" id="analysis-close" type="button" aria-label="Закрыть"><svg class="icon"><use href="#i-x"/></svg></button></div>
+  <div class="dialog-body">
+    <p id="analysis-context"></p>
+    <dl class="analysis-results" id="analysis-results"></dl>
+    <p class="analysis-note" id="analysis-note"></p>
+    <button type="button" class="button analysis-trigger" id="analysis-gpt" hidden>Объяснить с ИИ</button>
+    <p class="analysis-answer" id="analysis-answer" role="status" hidden></p>
+  </div>
+</dialog>
+<dialog id="chat-dialog" aria-labelledby="chat-title">
+  <div class="dialog-head"><span class="section-icon"><svg class="icon"><use href="#i-leaf"/></svg></span><h2 id="chat-title">ИИ-помощник ЗКО</h2><button class="button icon-button" id="chat-close" type="button" aria-label="Закрыть чат"><svg class="icon"><use href="#i-x"/></svg></button></div>
+  <div class="dialog-body">
+    <p id="chat-context"></p><p class="analysis-note" id="chat-mode"></p>
+    <div class="chat-messages" id="chat-messages" role="log" aria-live="polite" aria-label="Переписка с помощником"></div>
+    <form id="chat-form"><label class="sr-only" for="chat-input">Ваш вопрос</label><textarea id="chat-input" maxlength="1600" rows="2" placeholder="Что происходит с почвой в этом районе?" required></textarea><button class="button analysis-trigger" id="chat-send" type="submit">Отправить</button></form>
+  </div>
+</dialog>
+<div class="sr-only" id="announcement" role="status" aria-live="polite"></div>
+</body>
+</html>
